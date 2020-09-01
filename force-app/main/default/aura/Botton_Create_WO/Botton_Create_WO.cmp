@@ -1,0 +1,21 @@
+<aura:component 
+    implements="flexipage:availableForRecordHome,force:lightningQuickAction,force:hasRecordId"
+    controller="Create_Work_Order_Controller"
+>
+    
+    <aura:handler name="init" action="{! c.doInit }" value="{! this }" />
+    <aura:attribute name="message" type="String[]" default="" />
+    <aura:attribute name="loaded" type="Boolean" default="false" />
+
+    <div class="preloader">
+        <aura:if isTrue="{! v.loaded }">
+            <aura:set attribute="else">
+                <lightning:spinner alternativeText="Loading" />
+            </aura:set>
+        </aura:if>
+        <aura:iteration items="{!v.message}" var="m" >
+            <p><aura:unescapedHtml value="{!m}" /></p>
+        </aura:iteration>
+    </div>
+    
+</aura:component>

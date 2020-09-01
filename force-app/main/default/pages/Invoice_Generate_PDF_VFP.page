@@ -1,0 +1,308 @@
+<apex:page standardController="Invoice__c"
+    extensions="Invoice_Generate_PDF_Controller"
+    applyBodyTag="false"
+    showHeader="false"
+    sidebar="false"
+    renderAs="pdf"
+    title="Invoice {!I.Name}"
+>
+<head>
+    <title>Invoice {!I.Name}</title>
+    <style>
+        @page {
+            size: 215.9mm 279.4mm;
+            margin: 22px;
+            margin-top: 180px;
+            margin-bottom: 70px;
+            @top-center {
+                content: element(header);
+            }
+            @bottom-left {
+                content: element(footer);
+            }
+        }
+        .page:before {
+            content: counter(page);
+        }
+        .pages:after {
+            content: counter(pages);
+        } 
+        div.header {
+            padding-top: 18px;
+            position: running(header);
+        }
+        
+        div.footer {
+            padding-bottom: 18px;
+            position: running(footer);
+        }
+        body{
+            font-family: sans-serif;
+            color: rgb(0,0,0);
+            font-size: 13px;
+        }
+        
+        .bold_text{
+            font-weight: 600;
+            line-height: 15px;
+        }
+        .bold_text span{
+            margin-top: 3px;
+            font-weight: 400;
+        }
+        td.title{
+            padding-bottom: 5px;
+            color: rgb(127,127,127);
+            font-weight: bold;
+            font-size: 18px;
+        }
+        table{            
+            line-height: 15px;
+        }
+        table tr th{
+            background-color: #D3D3D3;
+        }
+        table.address{
+            margin: 0 auto;
+        }
+        table.selling{
+            margin: 5px auto;
+            border-collapse: collapse;
+        }
+        th.all_border,td.all_border{
+            border:1px solid black;
+        }
+        table.items{
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        td.boder_b{
+            border-bottom:1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <apex:outputText rendered="{! !Errors }">
+        <div class="header">
+            <table cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td width="28%" valign="top" align="left" class="bold_text">
+                        <table width="100%" cellspacing="0" border="0" >
+                            <tr>
+                                <td colspan="2" align="right" valign="top" class="title" width="100%">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" valign="top">{! Company.Name }<br/>{! Company.Street} <br/> {! Company.City }, {!Company.StateCode} {!Company.PostalCode}</td>
+                            </tr>
+                            <tr>
+                                <td>Phone:</td><td>{!Company.Phone}</td>
+                            </tr>
+                            <tr>
+                                <td>Fax:</td><td>{!Company.Fax}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">www.cobalttruck.com</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><span>Page </span><span class="page"></span><span> of </span><span class="pages"></span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="35.3%" valign="center">
+                        <img width="100%" src="{!URLFOR($Resource.logo_pdf)}" />
+                    </td>
+                    <td width="36.6%" valign="top">
+                        <table cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td align="right" valign="top" class="title" width="100%">INVOICE</td>
+                            </tr>
+                            <tr>
+                                <td align="center" width="100%">
+                                    <table class="estimate_detail" width="100%">
+                                        <tr>
+                                            <td align="right" width="70%" ><b>Invoice ID:</b></td>
+                                            <td align="left"> {!I.Name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right" width="70%" ><b>Order Date:</b></td>
+                                            <td align="left"> <apex:outputText value="{0, date, M'/'d'/'yyyy}"><apex:param value="{!I.Order_Date__c}" /></apex:outputText></td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right" width="70%" ><b>Invoice Date:</b></td>
+                                            <td align="left"> <apex:outputText value="{0, date, M'/'d'/'yyyy}"><apex:param value="{!I.Invoice_Date__c}" /></apex:outputText></td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right" width="70%" ><b>Customer PO:</b></td>
+                                            <td align="left"> {!I.Customer_PO__C}</td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right" width="70%" ><b>Terms:</b></td>
+                                            <td align="left"> {!I.Sold_to_Customer__r.Terms__c}</td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right" width="70%" ><b>Sales Rep:</b></td>
+                                            <td align="left"> {!I.Sales_Rep__r.Name}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table class="address" cellspacing="0" border="0" width="95%">
+            <tr>
+                <td colspan="4" style="padding-left: 45px;">Sold To: {!I.Sold_to_Customer__r.Name}</td>
+            </tr>
+            <tr>
+                <td width="10%" valign="top" align="right"   class="bold_text" >Ship to: </td>
+                <td width="20%" >{!I.Ship_to_Company_name__c}</td>
+                <td width="20%" valign="top" align="right"  class="bold_text" >Bill to: </td>
+                <td width="20%">{!I.Bill_to_Company_Name__c}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>{!I.Ship_to_Street_Address__c}</td>
+                <td></td>
+                <td>{!I.Bill_to_street_address__c}</td>
+            </tr>            
+            <tr>
+                <td></td>
+                <td>{! I.Ship_to_City__c }, {!I.Ship_to_State__c} {!I.Ship_to_Zip_code__c}</td>
+                <td></td>
+                <td>{! I.Ship_to_City__c }, {!I.Bill_to_State__c} {!I.Bill_to_Zip_code__c}</td>
+            </tr>
+        </table>
+        <table border="0" cellspacing="0" width="100%" class="items">
+            <thead>
+               <tr>
+                    <th class="all_border" width="25%">Unit Number</th>
+                    <th class="all_border" width="25%">Make/Model</th>
+                    <th class="all_border" width="25%">Year</th>
+                    <th class="all_border" width="25%">VIN</th>
+                </tr> 
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="all_border">{!I.Unit__r.Name}</td>
+                    <td class="all_border">{!I.Unit__r.Make__c+' '+I.Unit__r.Model__c}</td>
+                    <td class="all_border">{!I.Unit__r.Year__c}</td>
+                    <td class="all_border">{!I.Unit__r.VIN__c}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin: 10px 0;">
+            <apex:outputText value="{!SUBSTITUTE(JSENCODE(I.Client_Comments__c),'\r\n','<br/>')}" escape="false"/>
+        </div>
+
+        <apex:outputText rendered="{! !I.Hide_Line_items__c}">
+            <table border="0" cellspacing="0" width="100%" class="items">
+                <thead>
+                    <tr>
+                        <th class="all_border" width="15%" >Item</th>
+                        <th class="all_border" width="31%" >Description</th>
+                        <th class="all_border" width="12%" align="center">Qty</th>
+                        <th class="all_border" width="12%" align="right">Price</th>
+                        <th class="all_border" width="18%" align="right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!items}" var="item">
+                        <tr>
+                            <td class="all_border">{! IF(item.Part_number__c == Null, item.Unknown_Part_Name__c ,item.Part_number__r.Name) }</td>
+                            <td class="all_border">{! IF(item.Description__c == Null, item.Part_number__r.Description ,item.Description__c) }</td>
+                            <td class="all_border" align="center">{! item.Quantity__c } {! item.UOM__c }</td>
+                            <td class="all_border" align="right">${!item.Selling_Price__c}</td>
+                            <td class="all_border" align="right"><b>${!item.Total_Price_Formula__c}</b></td>
+                        </tr>
+                    </apex:repeat>
+                    <tr>
+                        <td colspan="4" align="right"><b>Sub Total:</b></td>
+                        <td align="right" class="all_border"><b>$ {! I.Invoice_Selling_Price__c}</b></td>
+                    </tr>
+                </tbody>
+            </table>
+        </apex:outputText>
+        <table border="0" cellspacing="0" width="100%" class="selling">
+            <tr>
+                <td width="60%"><b>The following options may be added:</b></td>
+            </tr>
+        </table>
+
+        <table border="0" cellspacing="0" width="100%" class="items">
+            <thead>
+                <tr>
+                    <th class="all_border" width="15%" >Item</th>
+                    <th class="all_border" width="31%" >Description</th>
+                    <th class="all_border" width="12%" align="center">Quantity</th>
+                    <th class="all_border" width="12%" align="right">Unit Price</th>
+                    <th class="all_border" width="18%" align="right">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!items_suggested}" var="item">                    
+                    <tr>
+                        <td  class="all_border">{! IF(item.Part_number__c == Null, item.Unknown_Part_Name__c ,item.Part_number__r.Name) }</td>
+                        <td  class="all_border">{! item.Description__c}</td>
+                        <td  class="all_border" align="center">{! item.Quantity__c } {! item.UOM__c }</td>
+                        <td  class="all_border" align="right">${!item.Selling_Price__c}</td>
+                        <td  class="all_border" align="right"><b>${!item.Total_Price_Formula__c}</b></td>
+                    </tr>
+                </apex:repeat>
+                <tr>
+                    <td colspan="4" align="right"><b>Sub Total:</b></td>
+                    <td align="right" class="all_border"><b>$ {! I.Invoice_Suggested_Price__c}</b></td>
+                </tr>
+            </tbody>
+        </table>
+        <table border="0" cellspacing="0" width="100%" style="margin-top: 15px;">
+            <tr>
+                <td width="70%">
+                    Colbat Truck Equipment warrants 6 months on labor only and manufacturer's
+                    warranty on parts (which will not include freight). No other warranty is
+                    expressed or implied. 20% restocking fee + freight on all returns with receipt.
+                    No returns allowed on special orders items.
+                </td>
+                <td width="30%" class="bold_text" valign="top">
+                    <table border="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td width="50%" align="right">Subtotal:</td>
+                            <td width="50%" align="right">$ {!I.Subtotal__c}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%" align="right">Sales Tax:</td>
+                            <td width="50%" align="right">$ {!I.Sales_Tax__c}</td>
+                        </tr>
+                        <tr>
+                            <td width="50%" align="right">Order Total:</td>
+                            <td width="50%" align="right">$ {!I.Order_Total__c}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td width="70%" style="padding:15px 0;">
+                    <table border="0" cellspacing="0" width="100%" style="border-collapse: collapse;line-height: 30px;">
+                        <tr>
+                            <td width="30%" align="right">SIGNATURE:</td>
+                            <td width="70%" class="boder_b"></td>
+                        </tr>
+                        <tr>
+                            <td width="30%"></td>
+                            <td width="70%" align="center"> Thank you for your business!</td>
+                        </tr>
+                    </table>
+                </td>
+                <td width="30%"></td>
+            </tr>
+        </table>
+        
+        <div style="width: 100%;margin-top: 10px;text-align:center;">
+            PLEASE REMIT PAYMENT TO COBALT TRUCK EQUIPMENT 345 W. KARCHER RD. NAMPA, ID. 83678
+        </div>
+    </apex:outputText>
+    
+</body>
+</apex:page>

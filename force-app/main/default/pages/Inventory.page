@@ -1,0 +1,4 @@
+<apex:page showHeader="true" showchat="true" tabstyle="Inventory__c">
+<a style="align:right" href="javascript:printWin('/a00/x?fcf=00B610000014NXu&amp;rolodexIndex=-1&amp;page=1')" id="00B610000014NXu_printLink" title="Printable View (Available Inventory)"><img src="/img/s.gif" alt="Printable View (Available Inventory)" class="printerIcon" onblur="this.className = 'printerIcon';" onfocus="this.className = 'printerIconOn';" onmouseout="this.className = 'printerIcon';this.className = 'printerIcon';" onmouseover="this.className = 'printerIconOn';this.className = 'printerIconOn';" title="Printable View (Available Inventory)"></img></a>
+    <apex:enhancedlist type="Inventory__c" height="700" rowsPerPage="25" />
+</apex:page>

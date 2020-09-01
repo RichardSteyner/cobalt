@@ -1,0 +1,29 @@
+<aura:component 
+    implements="flexipage:availableForRecordHome,force:lightningQuickAction,force:hasRecordId"
+    controller="WO_Create_Invoice_Controller"
+>
+    
+    <aura:handler name="init" action="{! c.doInit }" value="{! this }" />
+    <aura:attribute name="message" type="String[]" default="" />
+    <aura:attribute name="loaded" type="Boolean" default="false" />
+    <aura:attribute name="flag" type="Boolean" default="false" />
+
+
+    <div class="preloader">
+        <aura:if isTrue="{! v.loaded }">
+            <aura:set attribute="else">
+                <lightning:spinner alternativeText="Loading" />
+            </aura:set>
+        </aura:if>
+        <aura:iteration items="{!v.message}" var="m" >
+            <p><aura:unescapedHtml value="{!m}" /></p>
+        </aura:iteration>
+        <aura:if isTrue="{! v.flag }"><p><lightning:icon iconName="utility:success" alternativeText="Success!" variant="Success" title="success variant"  size="small" />  This Work Order is available to Create Invoice</p></aura:if>
+    </div>
+    
+    <aura:if isTrue="{! v.flag }">
+        <br/>
+        <lightning:button variant="brand" label="Create Invoice" title="Brand action" onclick="{! c.ClickSave }" />
+    </aura:if>
+    
+</aura:component>

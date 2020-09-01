@@ -1,0 +1,3 @@
+<apex:page showHeader="true" showchat="true" tabstyle="Sales_Summary__c">
+    <apex:enhancedlist type="Sales_Summary__c" height="700" rowsPerPage="25" />
+</apex:page>

@@ -1,0 +1,198 @@
+<apex:page standardController="Purchase_Order__c"
+    extensions="Purchase_Order_Generate_PDF_Controller"
+    applyBodyTag="false"
+    showHeader="false"
+    sidebar="false"
+    renderAs="pdf"
+    title="Purchase Order {!po.Name}"
+>
+<head>
+    <title>Purchase Order {!po.Name}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18px;
+            margin-top: 165px;
+            @top-center {
+                content: element(header);
+            }
+        }
+        .page:before {
+            content: counter(page);
+        }
+        .pages:after {
+            content: counter(pages);
+        } 
+        div.header {
+            margin-top: 18px;
+            position: running(header);
+        }
+        body{
+            font-family: sans-serif;
+            color: rgb(0,0,0);
+        }
+        
+        tr.headers td{
+            border:1px solid black;
+            background-color: #D3D3D3;
+        }
+
+        table.order_items{
+            font-size: 12.5px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            border-bottom: solid 1px #000;
+        }
+        table.order_items tr td.padding_cell{
+            padding: 7px 0;
+        }
+        .bold_text{
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 15px;
+        }
+        table.order{
+            font-size: 13px;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        td.header{
+            border:1px solid black;
+            background-color: #D3D3D3;
+            line-height: 20px;
+        }
+        td.boder{
+            border:1px solid black;
+            line-height: 20px;
+        }
+        td.title{
+            padding-bottom: 15px;
+            padding-top: 15px;
+            color: rgb(127,127,127);
+            font-weight: bold;
+            font-size: 18px;
+        }
+        td.font-12{
+            font-size: 12px;
+        }
+        .table_center{
+            margin: 0 auto;
+            font-size: 11.5px;
+            line-height: 20px;
+            border-collapse: collapse;
+        }
+        .table_center tr th{
+            font-weight: 400;
+            background-color: #D3D3D3;
+        }
+        .boder_top td{
+            border-top:1px solid black;
+            padding-top: 20px;
+        }
+        .table_center tr th,.table_center tr td{
+            border:1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <apex:outputText rendered="{! !Errors }">
+        <div class="header">
+            <table  cellspacing="0" border="0" width="100%" class="order">
+                <tr>
+                    <td width="22%" valign="top"><img width="80%" src="{!URLFOR($Resource.logo_pdf)}" /></td> 
+                    <td width="28%" valign="top" align="left" class="bold_text">
+                        {! Company.Name }<br/>
+                        {! Company.Street} <br/> {! Company.City }, {!Company.StateCode} {!Company.PostalCode}
+                    </td> 
+                    <td width="25%" valign="top" align="left" class="bold_text">
+                        Phone: {!Company.Phone}<br/>
+                        Fax: {!Company.Fax}<br/>
+                        www.cobalttruck.com
+                    </td> 
+                    <td align="right">
+                        <table class="order" border="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td colspan="2" align="right" class="title">PURCHASE ORDER</td>
+                            </tr>
+                            <tr>
+                                <td class="header" width="40%" align="right">Order ID:</td>
+                                <td class="boder" width="60%" align="right"><b>{!po.Name}</b></td>
+                            </tr>
+                            <tr style="height: 5px;"></tr>
+                            <tr>
+                                <td class="header" width="40%" align="right">Order Date:</td>
+                                <td class="boder" width="60%" align="right"><apex:outputText value="{0, date, M'/'d'/'yyyy}"><apex:param value="{!po.Order_date__c}" /></apex:outputText></td>
+                            </tr>                    
+                            <tr>
+                                <td colspan="2" align="right" style="padding-top: 15px;"> <span>Page </span><span class="page"></span><span> of </span><span class="pages"></span></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table width="98%" style="margin:0 auto 15px auto;">
+            <tr>
+                <td width="20%" class="font-12" valign="top"><b>Supplier: {!Supplier.Supplier_ID__c}</b><br/>
+                    {!Supplier.Name}<br/>{! Supplier.BillingStreet} {! Supplier.BillingCity }<br/>{!Supplier.BillingState} {!Supplier.BillingPostalCode}
+                </td>
+                <td width="60%" valign="center" align="center">
+                    <table border="0" cellspacing="0" width="95%" class="table_center">
+                        <tr>
+                            <th width="25%">Shipping Method</th>
+                            <th width="25%">Terms</th>
+                            <th width="25%">Ordered By</th>
+                            <th width="25%">Need Date</th>
+                        </tr>
+                        <tr>
+                            <td>{!po.Shipping_method__c}</td>
+                            <td>{!po.Terms__c}</td>
+                            <td>{!OwnerName}</td>
+                            <td><apex:outputText value="{0, date, M'/'d'/'yyyy}"><apex:param value="{!po.Need_Date__c}" /></apex:outputText></td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="font-12" width="20%" >
+                    <b>Ship To:</b><br/>
+                    {!po.Ship_to_name__c}<br/>{!po.Ship_to_address__c}<br/>{!po.Ship_to_City__c}, {! po.Ship_to_State__c } {!po.Ship_to_Postal_code__c}
+                </td>
+            </tr> 
+            <tr>
+                <td colspan="3"  class="font-12" valign="bottom"><b>Supplier Notes: {!PO.Supplier_Notes__c}</b></td>
+            </tr>
+        </table>
+        <table class="order_items" cellspacing="0" border="0" width="98%">
+            <tr class="headers" align="center">
+                <td width="20%" >Supplier Part Number</td>
+                <td width="35%">Description</td>
+                <td width="9%">Job #</td>
+                <td width="10%">Order Qty</td>
+                <td width="6%">UOM</td>
+                <td width="10%">Unit Cost</td>
+                <td width="10%">Extended Cost</td>
+            </tr>
+            <apex:repeat value="{!items}" var="item">
+                <tr  valign="center" align="center">
+                    <td valign="center" class="padding_cell">{!IF(item.Part_Number__c!= Null,item.Supplier_Part_Number__c,item.Unknown_Supplier_Part_Number__c)}</td>
+                    <td valign="center" class="padding_cell">{!IF(item.Part_Number__c!= Null,item.Part_Description__c,item.Unknown_Part_Description__c)}</td>
+                    <td valign="center" class="padding_cell">{!item.Work_Order__r.WorkOrderNumber}</td>
+                    <td valign="center" class="padding_cell">{!item.Order_Qty__c}</td>
+                    <td valign="center" class="padding_cell">{!item.Unit_of_Measure__c}</td>
+                    <td valign="center" class="padding_cell">{!item.Actual_Cost__c}</td>
+                    <td valign="center" class="padding_cell">{!item.Extended_Cost__c}</td>
+                </tr>
+            </apex:repeat>
+            <tr style="height: 15px;"></tr>
+            <tr class="boder_top">
+                <td colspan="5" align="right">
+                    <b>Order Total:</b>
+                </td>
+                <td colspan="2" align="right" class="font-12">
+                    <b>$ {!Order_Total}&nbsp;&nbsp;&nbsp;</b>
+                </td>
+            </tr>
+        </table>
+    </apex:outputText>
+    
+</body>
+</apex:page>
