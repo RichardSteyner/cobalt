@@ -13,7 +13,7 @@ public with sharing class ApexCreationPO {
             return messages;
         }
         
-        List<ProductRequired> partRequiredList = [select Id, ProductRequiredNumber, Product2Id, Supplier_Formula__c, QuantityRequired, Unknown_Part_Name__c,PO__c,Product2.Standard_Cost__c 
+        List<ProductRequired> partRequiredList = [select Id, ProductRequiredNumber, Product2Id, Supplier_Formula__c, QuantityRequired, /*Unknown_Part_Name__c,*/PO__c,Product2.Standard_Cost__c 
                                                   	from ProductRequired 
                                                   	where Work_Order__c=:id and Inventory_Status__c='Back Order' and Supplier_Formula__c!=null];
         if(partRequiredList==null || partRequiredList.size()==0){
@@ -60,7 +60,7 @@ public with sharing class ApexCreationPO {
                     auxPOLI.Part_Number__c = pr.Product2Id;
                     auxPOLI.Order_Qty__c = pr.QuantityRequired;
                     auxPOLI.Status__c = 'Open';
-                    auxPOLI.Unknown_Supplier_Part_Number__c = pr.Unknown_Part_Name__c;
+                    //auxPOLI.Unknown_Supplier_Part_Number__c = pr.Unknown_Part_Name__c;
                     auxPOLI.Part_Required__c = pr.Id;
                     auxPOLI.Supplier_Key__c = key;
                     auxPOLI.Actual_Cost__c = pr.Product2.Standard_Cost__c;

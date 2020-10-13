@@ -13,7 +13,7 @@ trigger Estimate_Line_Update_Price on Estimate_Line_Item__c (before insert,befor
 
         Map<Id,Product2> MapPart = new Map<Id,Product2>([
             SELECT 
-                Id,Landed_Cost__c,Standard_Cost__c,Family,Supplier__r.Labor_Travel_Pricebook__c,Supplier__r.Parts_Material_Pricebook__c
+                Id,Landed_Cost__c,Standard_Cost__c,Family,Supplier__r.Labor_Travel_Pricebook__c,Supplier__r.Parts_Material_Pricebook__c,Unknown_Part__c
             FROM Product2 WHERE Id IN :partIds  
         ]);
 
@@ -46,7 +46,7 @@ trigger Estimate_Line_Update_Price on Estimate_Line_Item__c (before insert,befor
                     temp = MapPart.get(item.Part_number__c);
                     if(temp != null){
                         if(Trigger.isInsert){                            
-                            item.Standard_Cost__c = temp.Standard_Cost__c;
+                            item.Standard_Cost__c = temp.Standard_Cost__c == null ? 0 : temp.Standard_Cost__c;
                             if(temp.Family == 'Travel' || temp.Family == 'Labor'){
                                 price = MapEntryPrice.get(temp.id + '-Labor_Travel_Pricebook');
                                 if(price != null)
@@ -59,7 +59,11 @@ trigger Estimate_Line_Update_Price on Estimate_Line_Item__c (before insert,befor
                                 if(price != null)
                                     item.Selling_Price__c = price;
                                 else {
-                                    item.addError('Part Price book entry not found please create the price book entry or use another part');
+                                    if(temp.Unknown_Part__c){
+                                        item.Selling_Price__c = item.Standard_Cost__c;
+                                    }else{                                        
+                                        item.addError('Part Price book entry not found please create the price book entry or use another part');
+                                    }
                                 }
                             }
                         }

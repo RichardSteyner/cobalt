@@ -202,6 +202,9 @@
             <apex:variable value="{!Seq['suggested']}" var="List_suggested_item" />
             <apex:variable value="{!Seq['no-suggested']}" var="List_no_suggested_item" />
             
+            <h3><b>{! Summary.Title}</b></h3>
+            <p>{! Summary.Description}</p>
+            
             <!--<apex:outputText rendered="{! IF(contains(Summary.Title, 'Suggested parts') , true, false) }">
                 <div>
                     <p align="right"><b>Estimate Total: ${! E.Estimate_Selling_Price__c}</b></p>
@@ -215,7 +218,6 @@
                         <td width="60%"><b style="text-decoration: underline;">The following options may be added:</b></td>
                     </tr>
                 </table>
-                
                 <table border="0" cellspacing="0" width="100%" class="items">
                     <thead>
                         <tr>
@@ -244,13 +246,6 @@
                 </table>
             </apex:outputText>
             
-            <div>
-                <p align="right"><b>Estimate Total: ${! E.Estimate_Selling_Price__c}</b></p>
-            </div>
-
-            <h3><b>{! Summary.Title}</b></h3>
-            <p>{! Summary.Description}</p>
-
             <apex:outputText rendered="{! IF(List_no_suggested_item.size > 0 , true, false) }">
                 <table border="0" cellspacing="0" width="100%" class="items">
                     <thead>
@@ -282,9 +277,9 @@
             <br/>
         </apex:repeat>
         
-        <!--<div>
+        <div>
             <p align="right"><b>Estimate Total: ${! E.Estimate_Selling_Price__c}</b></p>
-        </div>-->
+        </div>
 
         <table border="0" cellspacing="0" width="55%" style="border-collapse: collapse;margin-top:10px;">
             <tr>

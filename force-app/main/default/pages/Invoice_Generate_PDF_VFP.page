@@ -197,6 +197,93 @@
             <apex:outputText value="{!SUBSTITUTE(JSENCODE(I.Client_Comments__c),'\r\n','<br/>')}" escape="false"/>
         </div>
 
+        <apex:repeat value="{!MapTypeItemsPublic}" var="seqNumber">
+            <apex:variable value="{!MapTypeItemsPublic[seqNumber]}" var="Seq" />
+            <apex:variable value="{!MapSummaryDetailPublic[seqNumber]}" var="Summary" />
+            <apex:variable value="{!Seq['suggested']}" var="List_suggested_item" />
+            <apex:variable value="{!Seq['no-suggested']}" var="List_no_suggested_item" />
+            
+            <h3><b>{! Summary.Title}</b></h3>
+            <p>{! Summary.Description}</p>
+            
+            <!--<apex:outputText rendered="{! IF(contains(Summary.Title, 'Suggested parts') , true, false) }">
+                <div>
+                    <p align="right"><b>Estimate Total: ${! E.Estimate_Selling_Price__c}</b></p>
+                </div>
+            </apex:outputText>-->
+            
+            
+            <apex:outputText rendered="{! IF(List_suggested_item.size > 0 , true, false) }">
+                <table border="0" cellspacing="0" width="100%" class="selling">
+                    <tr>
+                        <td width="60%"><b style="text-decoration: underline;">The following options may be added:</b></td>
+                    </tr>
+                </table>
+                <table border="0" cellspacing="0" width="100%" class="items">
+                    <thead>
+                        <tr>
+                            <th class="all_border" width="15%" >Item</th>
+                            <th class="all_border" width="31%" >Description</th>
+                            <th class="all_border" width="12%" align="center">Quantity</th>
+                            <th class="all_border" width="12%" align="right">Unit Price</th>
+                            <th class="all_border" width="18%" align="right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!List_suggested_item}" var="suggested_item" >                   
+                            <tr>
+                                <td  class="all_border">{! IF(suggested_item.Part_number__c == Null, suggested_item.Unknown_Part_Name__c ,suggested_item.Part_number__r.Name) }</td>
+                                <td  class="all_border">{! suggested_item.Description__c}</td>
+                                <td  class="all_border" align="center">{! suggested_item.Quantity__c } {! suggested_item.UOM__c }</td>
+                                <td  class="all_border" align="right">${!suggested_item.Selling_Price__c}</td>
+                                <td  class="all_border" align="right"><b>${!suggested_item.Total_Price_Formula__c}</b></td>
+                            </tr>
+                        </apex:repeat>
+                        <tr style="height: 20px"></tr>
+                        <tr>
+                            <td colspan="5" align="right"><b>Suggested Subtotal: ${! Summary.Total_suggested}</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </apex:outputText>
+            
+            <!-- <div>
+                <p align="right"><b>Invoice Total: ${! I.Invoice_Selling_Price__c}</b></p>
+            </div> -->
+
+
+            <apex:outputText rendered="{! IF(List_no_suggested_item.size > 0 , true, false) }">
+                <table border="0" cellspacing="0" width="100%" class="items">
+                    <thead>
+                        <tr>
+                            <th class="all_border" width="15%" >Item</th>
+                            <th class="all_border" width="31%" >Description</th>
+                            <th class="all_border" width="12%" align="center">Quantity</th>
+                            <th class="all_border" width="12%" align="right">Unit Price</th>
+                            <th class="all_border" width="18%" align="right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!List_no_suggested_item}" var="no_suggested_item" >
+                            <tr>
+                                <td  class="all_border">{! IF(no_suggested_item.Part_number__c == Null, no_suggested_item.Unknown_Part_Name__c ,no_suggested_item.Part_number__r.Name) }</td>
+                                <td  class="all_border">{! IF(no_suggested_item.Description__c == Null, no_suggested_item.Part_number__r.Description ,no_suggested_item.Description__c) }</td>
+                                <td  class="all_border" align="center">{! no_suggested_item.Quantity__c } {! no_suggested_item.UOM__c }</td>
+                                <td  class="all_border" align="right">${!no_suggested_item.Selling_Price__c}</td>
+                                <td  class="all_border" align="right"><b>${!no_suggested_item.Total_Price_Formula__c}</b></td>
+                            </tr>
+                        </apex:repeat>                        
+                        <tr style="height: 20px"></tr>
+                        <tr>
+                            <td colspan="5" align="right"><b>Subtotal: ${! Summary.Total_no_suggested}</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </apex:outputText>
+            <br/>
+        </apex:repeat>
+
+        <!-- 
         <apex:outputText rendered="{! !I.Hide_Line_items__c}">
             <table border="0" cellspacing="0" width="100%" class="items">
                 <thead>
@@ -225,38 +312,41 @@
                 </tbody>
             </table>
         </apex:outputText>
-        <table border="0" cellspacing="0" width="100%" class="selling">
-            <tr>
-                <td width="60%"><b>The following options may be added:</b></td>
-            </tr>
-        </table>
+        <apex:outputText rendered="{! items_suggested.size > 0}">
+            <table border="0" cellspacing="0" width="100%" class="selling">
+                <tr>
+                    <td width="60%"><b>The following options may be added:</b></td>
+                </tr>
+            </table>
 
-        <table border="0" cellspacing="0" width="100%" class="items">
-            <thead>
-                <tr>
-                    <th class="all_border" width="15%" >Item</th>
-                    <th class="all_border" width="31%" >Description</th>
-                    <th class="all_border" width="12%" align="center">Quantity</th>
-                    <th class="all_border" width="12%" align="right">Unit Price</th>
-                    <th class="all_border" width="18%" align="right">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <apex:repeat value="{!items_suggested}" var="item">                    
+            <table border="0" cellspacing="0" width="100%" class="items">
+                <thead>
                     <tr>
-                        <td  class="all_border">{! IF(item.Part_number__c == Null, item.Unknown_Part_Name__c ,item.Part_number__r.Name) }</td>
-                        <td  class="all_border">{! item.Description__c}</td>
-                        <td  class="all_border" align="center">{! item.Quantity__c } {! item.UOM__c }</td>
-                        <td  class="all_border" align="right">${!item.Selling_Price__c}</td>
-                        <td  class="all_border" align="right"><b>${!item.Total_Price_Formula__c}</b></td>
+                        <th class="all_border" width="15%" >Item</th>
+                        <th class="all_border" width="31%" >Description</th>
+                        <th class="all_border" width="12%" align="center">Quantity</th>
+                        <th class="all_border" width="12%" align="right">Unit Price</th>
+                        <th class="all_border" width="18%" align="right">Amount</th>
                     </tr>
-                </apex:repeat>
-                <tr>
-                    <td colspan="4" align="right"><b>Sub Total:</b></td>
-                    <td align="right" class="all_border"><b>$ {! I.Invoice_Suggested_Price__c}</b></td>
-                </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!items_suggested}" var="item">                    
+                        <tr>
+                            <td  class="all_border">{! IF(item.Part_number__c == Null, item.Unknown_Part_Name__c ,item.Part_number__r.Name) }</td>
+                            <td  class="all_border">{! item.Description__c}</td>
+                            <td  class="all_border" align="center">{! item.Quantity__c } {! item.UOM__c }</td>
+                            <td  class="all_border" align="right">${!item.Selling_Price__c}</td>
+                            <td  class="all_border" align="right"><b>${!item.Total_Price_Formula__c}</b></td>
+                        </tr>
+                    </apex:repeat>
+                    <tr>
+                        <td colspan="4" align="right"><b>Sub Total:</b></td>
+                        <td align="right" class="all_border"><b>$ {! I.Invoice_Suggested_Price__c}</b></td>
+                    </tr>
+                </tbody>
+            </table>
+        </apex:outputText>
+        -->
         <table border="0" cellspacing="0" width="100%" style="margin-top: 15px;">
             <tr>
                 <td width="70%">
@@ -273,11 +363,11 @@
                         </tr>
                         <tr>
                             <td width="50%" align="right">Sales Tax:</td>
-                            <td width="50%" align="right">$ {!I.Sales_Tax__c}</td>
+                            <td width="50%" align="right">$ {!Round(I.Sales_Tax__c,2)}</td>
                         </tr>
                         <tr>
                             <td width="50%" align="right">Order Total:</td>
-                            <td width="50%" align="right">$ {!I.Order_Total__c}</td>
+                            <td width="50%" align="right">$ {!Round(I.Order_Total__c,2)}</td>
                         </tr>
                     </table>
                 </td>

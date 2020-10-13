@@ -14,11 +14,13 @@ public with sharing class Invoice_Email_Template {
             ];
             System.debug(Invoice);
             if( (String)Invoice.Invoice_Contact__c != null && (String)Invoice.Invoice_Contact__c != '' ){
+                System.debug(Invoice.Invoice_Date__c);
                 Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
                 Messaging.EmailFileAttachment pdf = new Messaging.EmailFileAttachment();
 
                 PageReference pref = Page.Invoice_Generate_PDF_VFP;
                 pref.getParameters().put('id',Invoice.Id);
+                pref.getParameters().put('fakedate',String.valueOf(Date.today()));
                 Blob b = !test.isRunningTest() ? pref.getContent() : Blob.valueof('test');
                 pdf.setFileName('Invoice ' + Invoice.Name +'.pdf');
                 pdf.setBody(b);
